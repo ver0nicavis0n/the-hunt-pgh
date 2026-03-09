@@ -31,6 +31,7 @@ create table if not exists listings (
   entry_info text,
   pricing_notes text,
   parking_info text,
+  images text[],
   lat numeric,
   lng numeric,
   created_at timestamptz default now(),

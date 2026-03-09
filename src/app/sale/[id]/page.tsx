@@ -162,6 +162,47 @@ export default function SalePage() {
             )}
           </div>
 
+          {listing.images && listing.images.length > 0 ? (
+            <div style={{ marginBottom: '2rem' }}>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: listing.images.length === 1 ? '1fr' : 'repeat(auto-fill, minmax(220px, 1fr))',
+                gap: '0.75rem',
+              }}>
+                {listing.images.map((src, i) => (
+                  <div key={i} style={{
+                    aspectRatio: listing.images!.length === 1 ? '16/7' : '4/3',
+                    overflow: 'hidden',
+                    borderRadius: 3,
+                    border: '1px solid var(--border)',
+                    background: 'var(--paper)',
+                  }}>
+                    <img
+                      src={src}
+                      alt={`${listing.title} — photo ${i + 1}`}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div style={{
+              height: 220,
+              borderRadius: 3,
+              border: '1px solid var(--border)',
+              background: `color-mix(in srgb, ${stripeColor} 10%, var(--paper))`,
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+              gap: '0.6rem', marginBottom: '2rem',
+            }}>
+              <span style={{ fontSize: '4rem', lineHeight: 1 }}>{icon}</span>
+              <span style={{
+                fontFamily: '"DM Mono", monospace', fontSize: '0.5rem',
+                letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--ink-faint)',
+              }}>{categoryLabel}</span>
+            </div>
+          )}
+
           <div style={{
             display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
             gap: '1.5rem', marginBottom: '2.5rem', padding: '1.5rem',

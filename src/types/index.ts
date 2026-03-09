@@ -22,6 +22,7 @@ export interface Listing {
   end_time: string
   company: string | null
   description: string | null
+  images: string[] | null
   source: string
   source_url: string | null
   payment_methods: string | null

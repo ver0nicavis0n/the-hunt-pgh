@@ -1,5 +1,5 @@
 import { Listing } from '@/types'
-import { STRIPE_COLORS, CATEGORY_ICONS, STATUS_CONFIG, formatDateRange } from '@/lib/utils'
+import { STRIPE_COLORS, CATEGORY_ICONS, STATUS_CONFIG, formatDateRange, getLiveStatus } from '@/lib/utils'
 
 interface CardProps {
   listing: Listing
@@ -10,7 +10,7 @@ interface CardProps {
 export default function ListingCard({ listing, featured, premium }: CardProps) {
   const stripeColor = STRIPE_COLORS[listing.type]
   const icon = CATEGORY_ICONS[listing.type]
-  const statusConfig = STATUS_CONFIG[listing.status]
+  const statusConfig = STATUS_CONFIG[getLiveStatus(listing)]
 
   return (
     <a href={`/sale/${listing.id}`} style={{

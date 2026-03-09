@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase'
 import { Listing } from '@/types'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
-import { STRIPE_COLORS, CATEGORY_ICONS, CATEGORY_LABELS, STATUS_CONFIG, formatDateRange } from '@/lib/utils'
+import { STRIPE_COLORS, CATEGORY_ICONS, CATEGORY_LABELS, STATUS_CONFIG, formatDateRange, getLiveStatus } from '@/lib/utils'
 
 const SEED_LISTINGS: Listing[] = [
   {
@@ -124,7 +124,7 @@ export default function SalePage() {
   const stripeColor = STRIPE_COLORS[listing.type]
   const icon = CATEGORY_ICONS[listing.type]
   const categoryLabel = CATEGORY_LABELS[listing.type]
-  const statusConfig = STATUS_CONFIG[listing.status]
+  const statusConfig = STATUS_CONFIG[getLiveStatus(listing)]
 
   return (
     <>

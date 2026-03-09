@@ -1,4 +1,4 @@
-import { SaleType, ListingStatus } from '@/types'
+import { SaleType, ListingStatus, Listing } from '@/types'
 
 export const STRIPE_COLORS: Record<SaleType, string> = {
   estate_sale: '#0028A0',
@@ -26,6 +26,38 @@ export const STATUS_CONFIG: Record<ListingStatus, { label: string; className: st
   ending_soon: { label: 'Ending Soon', className: 'pill-soon' },
   upcoming: { label: 'Coming Up', className: 'pill-up' },
   ended: { label: 'Ended', className: 'pill-ended' },
+}
+
+export function getLiveStatus(listing: Listing): ListingStatus {
+  const now = new Date()
+  // Treat dates as local midnight to avoid timezone shifts
+  const [sy, sm, sd] = listing.start_date.split('-').map(Number)
+  const [ey, em, ed] = listing.end_date.split('-').map(Number)
+  const startMidnight = new Date(sy, sm - 1, sd, 0, 0, 0)
+  const endMidnight = new Date(ey, em - 1, ed, 0, 0, 0)
+
+  // Parse end_time (e.g. "4:00 PM") into hours/minutes
+  let endHour = 23, endMin = 59
+  if (listing.end_time) {
+    const match = listing.end_time.match(/^(\d+):(\d+)\s*(AM|PM)$/i)
+    if (match) {
+      endHour = parseInt(match[1])
+      endMin = parseInt(match[2])
+      const period = match[3].toUpperCase()
+      if (period === 'PM' && endHour !== 12) endHour += 12
+      if (period === 'AM' && endHour === 12) endHour = 0
+    }
+  }
+  const endDateTime = new Date(ey, em - 1, ed, endHour, endMin, 0)
+
+  if (now > endDateTime) return 'ended'
+
+  const twoHoursBefore = new Date(endDateTime.getTime() - 2 * 60 * 60 * 1000)
+  const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0)
+
+  if (todayMidnight.getTime() === endMidnight.getTime() && now >= twoHoursBefore) return 'ending_soon'
+  if (now >= startMidnight && now <= endDateTime) return 'live'
+  return 'upcoming'
 }
 
 export function formatDate(dateStr: string): string {

@@ -4,7 +4,7 @@ import { Listing } from '@/types'
 import ListingCard from './ListingCard'
 import Filters from './Filters'
 import MapView from './MapView'
-import { STRIPE_COLORS } from '@/lib/utils'
+import { STRIPE_COLORS, getLiveStatus } from '@/lib/utils'
 
 const SEED_LISTINGS: Listing[] = [
   {
@@ -89,12 +89,22 @@ export default function ListingsGrid({ serverListings }: { serverListings?: List
     setActiveNeighborhood('')
   }
 
+  const todayMidnight = useMemo(() => {
+    const d = new Date()
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0)
+  }, [])
+
   const filtered = useMemo(() => listings.filter(l => {
+    // Hide listings from past days entirely
+    const [ey, em, ed] = l.end_date.split('-').map(Number)
+    const endMidnight = new Date(ey, em - 1, ed, 0, 0, 0)
+    if (getLiveStatus(l) === 'ended' && endMidnight < todayMidnight) return false
+
     if (activeTypes.length > 0 && !activeTypes.includes(l.type)) return false
     if (activeStatuses.length > 0 && !activeStatuses.includes(l.status)) return false
     if (activeNeighborhood && l.neighborhood !== activeNeighborhood) return false
     return true
-  }), [listings, activeTypes, activeStatuses, activeNeighborhood])
+  }), [listings, activeTypes, activeStatuses, activeNeighborhood, todayMidnight])
 
   const featured = filtered.filter(l => l.featured_tier === 'featured' || l.featured_tier === 'premium')
   const regular = filtered.filter(l => !l.featured_tier)

@@ -36,13 +36,13 @@ export function getLiveStatus(listing: Listing): ListingStatus {
   const startMidnight = new Date(sy, sm - 1, sd, 0, 0, 0)
   const endMidnight = new Date(ey, em - 1, ed, 0, 0, 0)
 
-  // Parse end_time (e.g. "4:00 PM") into hours/minutes
+  // Parse end_time (e.g. "4:00 PM", "4:00PM", "4 PM") into hours/minutes
   let endHour = 23, endMin = 59
   if (listing.end_time) {
-    const match = listing.end_time.match(/^(\d+):(\d+)\s*(AM|PM)$/i)
+    const match = listing.end_time.trim().match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)$/i)
     if (match) {
-      endHour = parseInt(match[1])
-      endMin = parseInt(match[2])
+      endHour = parseInt(match[1], 10)
+      endMin = match[2] ? parseInt(match[2], 10) : 0
       const period = match[3].toUpperCase()
       if (period === 'PM' && endHour !== 12) endHour += 12
       if (period === 'AM' && endHour === 12) endHour = 0

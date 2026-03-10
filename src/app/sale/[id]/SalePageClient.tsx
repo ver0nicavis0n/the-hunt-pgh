@@ -5,6 +5,7 @@ import { Listing } from '@/types'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import GetDirectionsButton from '@/components/GetDirectionsButton'
+import AddToCalendar from '@/components/AddToCalendar'
 import { STRIPE_COLORS, CATEGORY_ICONS, CATEGORY_LABELS, STATUS_CONFIG, formatDateRange, getLiveStatus } from '@/lib/utils'
 
 const SEED_LISTINGS: Listing[] = [
@@ -277,7 +278,21 @@ export default function SalePageClient({ id }: { id: string }) {
               </div>
               <div style={{ fontSize: '0.75rem', color: 'var(--ink-faint)', marginBottom: listing.address_hidden ? 0 : '0.6rem' }}>{listing.neighborhood}, {listing.city}</div>
               {!listing.address_hidden && (
-                <GetDirectionsButton address={listing.address} lat={listing.lat} lng={listing.lng} />
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem' }}>
+                  <GetDirectionsButton address={listing.address} lat={listing.lat} lng={listing.lng} />
+                  {liveStatus !== 'ended' && (
+                    <AddToCalendar
+                      title={listing.title}
+                      startDate={listing.start_date}
+                      endDate={listing.end_date}
+                      startTime={listing.start_time}
+                      endTime={listing.end_time}
+                      address={listing.address}
+                      description={listing.description}
+                      url={listing.source_url ?? `https://thehuntpgh.com/sale/${listing.id}`}
+                    />
+                  )}
+                </div>
               )}
             </div>
             {listing.payment_methods && (

@@ -268,11 +268,11 @@ export default function SalePage() {
             fontFamily: '"DM Mono", monospace', fontSize: '0.48rem',
             letterSpacing: '0.08em', lineHeight: 1.65, color: 'var(--ink-light)',
           }}>
-            Info sourced from {listing.source}. Details may have changed —{' '}
+            Info sourced from {listing.source}. Details may have changed — always check the{' '}
             {listing.source_url
-              ? <><a href={listing.source_url} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'underline' }}>check the original listing</a> before visiting.</>
-              : 'always check the original listing before visiting.'
-            }
+              ? <a href={listing.source_url} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'underline' }}>original listing</a>
+              : 'original listing'
+            }{' '}before visiting.
           </div>
 
           {listing.description && (

@@ -116,7 +116,8 @@ export default function Footer() {
         <div style={{
           fontFamily: '"DM Mono", monospace', fontSize: '0.48rem',
           letterSpacing: '0.1em', color: 'rgba(250,250,248,0.2)',
-        }}>Not affiliated with any estate sale company.</div>
+          maxWidth: 460, textAlign: 'right',
+        }}>Listing info is aggregated from third-party sources and may not be fully accurate. Always verify details with the original listing before visiting.</div>
       </div>
     </footer>
   )

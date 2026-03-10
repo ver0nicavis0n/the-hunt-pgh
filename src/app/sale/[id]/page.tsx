@@ -257,6 +257,20 @@ export default function SalePage() {
             </div>
           </div>
 
+          <div style={{
+            marginBottom: '2rem', padding: '0.75rem 1rem',
+            background: 'rgba(200, 150, 0, 0.07)', border: '1px solid rgba(200, 150, 0, 0.2)',
+            borderRadius: 3,
+            fontFamily: '"DM Mono", monospace', fontSize: '0.48rem',
+            letterSpacing: '0.08em', lineHeight: 1.65, color: 'var(--ink-light)',
+          }}>
+            Info sourced from {listing.source}. Details may have changed —{' '}
+            {listing.source_url
+              ? <><a href={listing.source_url} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'underline' }}>check the original listing</a> before visiting.</>
+              : 'always check the original listing before visiting.'
+            }
+          </div>
+
           {listing.description && (
             <div style={{ marginBottom: '2.5rem' }}>
               <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '0.5rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--ink-faint)', marginBottom: '0.75rem' }}>About this sale</div>

@@ -125,10 +125,66 @@ export default function SalePage() {
   const stripeColor = STRIPE_COLORS[listing.type]
   const icon = CATEGORY_ICONS[listing.type]
   const categoryLabel = CATEGORY_LABELS[listing.type]
-  const statusConfig = STATUS_CONFIG[getLiveStatus(listing)]
+  const liveStatus = getLiveStatus(listing)
+  const statusConfig = STATUS_CONFIG[liveStatus]
+
+  const ONLINE_AUCTION_SOURCES = ['MaxSold', 'Proxibid', 'Invaluable', 'BidSpotter', 'LiveAuctioneers']
+  const isOnlineAuction = listing.type === 'auction' && ONLINE_AUCTION_SOURCES.includes(listing.source)
+
+  function toSchemaTime(timeStr: string | null, fallback: string): string {
+    if (!timeStr) return fallback
+    const s = timeStr.trim()
+    const m12 = s.match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)$/i)
+    if (m12) {
+      let h = parseInt(m12[1], 10)
+      const min = m12[2] ? parseInt(m12[2], 10) : 0
+      const period = m12[3].toUpperCase()
+      if (period === 'PM' && h !== 12) h += 12
+      if (period === 'AM' && h === 12) h = 0
+      return `${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}:00`
+    }
+    const m24 = s.match(/^(\d{1,2}):(\d{2})/)
+    if (m24) return `${m24[1].padStart(2, '0')}:${m24[2]}:00`
+    return fallback
+  }
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: listing.title,
+    startDate: `${listing.start_date}T${toSchemaTime(listing.start_time, '09:00:00')}`,
+    endDate: `${listing.end_date}T${toSchemaTime(listing.end_time, '17:00:00')}`,
+    location: {
+      '@type': 'Place',
+      name: listing.address_hidden
+        ? `${listing.neighborhood}, Pittsburgh, PA`
+        : listing.address,
+      address: {
+        '@type': 'PostalAddress',
+        ...(listing.address_hidden ? {} : { streetAddress: listing.address }),
+        addressLocality: listing.city,
+        addressRegion: listing.state,
+        postalCode: listing.zip ?? '',
+        addressCountry: 'US',
+      },
+    },
+    ...(listing.company ? { organizer: { '@type': 'Organization', name: listing.company } } : {}),
+    eventStatus: liveStatus === 'ended'
+      ? 'https://schema.org/EventCancelled'
+      : 'https://schema.org/EventScheduled',
+    eventAttendanceMode: isOnlineAuction
+      ? 'https://schema.org/OnlineEventAttendanceMode'
+      : 'https://schema.org/OfflineEventAttendanceMode',
+    ...(listing.description ? { description: listing.description } : {}),
+    url: listing.source_url ?? `https://thehuntpgh.com/sale/${listing.id}`,
+  }
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Nav />
       <div style={{ paddingTop: 80 }}>
         <div style={{ height: 4, background: stripeColor }} />

@@ -29,13 +29,20 @@ export default function Footer() {
             letterSpacing: '0.2em', textTransform: 'uppercase',
             color: 'rgba(250,250,248,0.35)', marginBottom: '1rem',
           }}>Explore</div>
-          {['Estate Sales', 'Garage Sales', 'Flea Markets', 'Auctions', 'Shops', 'Venues'].map(link => (
-            <a key={link} href="#" style={{
+          {[
+            { label: 'Estate Sales', href: '/?type=estate_sale' },
+            { label: 'Garage Sales', href: '/?type=garage_sale' },
+            { label: 'Flea Markets', href: '/?type=flea_market' },
+            { label: 'Auctions', href: '/?type=auction' },
+            { label: 'Shops', href: '/for-businesses' },
+            { label: 'Venues', href: '/for-businesses' },
+          ].map(link => (
+            <a key={link.label} href={link.href} style={{
               display: 'block', fontFamily: '"DM Sans", sans-serif',
               fontSize: '0.8rem', color: 'rgba(250,250,248,0.6)',
               textDecoration: 'none', marginBottom: '0.5rem',
               transition: 'color 0.12s',
-            }}>{link}</a>
+            }}>{link.label}</a>
           ))}
         </div>
 
@@ -46,12 +53,17 @@ export default function Footer() {
             letterSpacing: '0.2em', textTransform: 'uppercase',
             color: 'rgba(250,250,248,0.35)', marginBottom: '1rem',
           }}>The Hunt</div>
-          {['About', 'For Businesses', 'Newsletter', 'Map View'].map(link => (
-            <a key={link} href="#" style={{
+          {[
+            { label: 'About', href: '/about' },
+            { label: 'For Businesses', href: '/for-businesses' },
+            { label: 'Newsletter', href: '/#alerts' },
+            { label: 'Map View', href: '/#map' },
+          ].map(link => (
+            <a key={link.label} href={link.href} style={{
               display: 'block', fontFamily: '"DM Sans", sans-serif',
               fontSize: '0.8rem', color: 'rgba(250,250,248,0.6)',
               textDecoration: 'none', marginBottom: '0.5rem',
-            }}>{link}</a>
+            }}>{link.label}</a>
           ))}
         </div>
 

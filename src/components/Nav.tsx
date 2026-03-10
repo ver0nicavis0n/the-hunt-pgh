@@ -35,10 +35,10 @@ export default function Nav() {
           listStyle: 'none',
         }} className="nav-links-desktop">
           {[
-            { label: 'Sales', href: '/#sales' },
-            { label: 'Shops', href: '/#sales' },
-            { label: 'Venues', href: '/#sales' },
+            { label: 'Sales', href: '/' },
             { label: 'Map', href: '/#map' },
+            { label: 'Shops', href: '/for-businesses' },
+            { label: 'Venues', href: '/for-businesses' },
           ].map(link => (
             <li key={link.label}>
               <a href={link.href} style={{

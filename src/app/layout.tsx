@@ -2,12 +2,12 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'The Hunt — Pittsburgh',
-  description: 'Estate sales, garage sales, flea markets & vintage shops in Pittsburgh. All in one place.',
+  title: 'Pittsburgh Estate Sales, Garage Sales & Flea Markets | The Hunt',
+  description: 'Find estate sales, garage sales, flea markets and auctions happening this weekend in Pittsburgh. Updated daily.',
   keywords: 'estate sales Pittsburgh, garage sales Pittsburgh, flea markets Pittsburgh, thrift shops Pittsburgh',
   openGraph: {
-    title: 'The Hunt — Pittsburgh',
-    description: 'Estate sales, garage sales, flea markets & vintage shops in Pittsburgh.',
+    title: 'Pittsburgh Estate Sales, Garage Sales & Flea Markets | The Hunt',
+    description: 'Find estate sales, garage sales, flea markets and auctions happening this weekend in Pittsburgh. Updated daily.',
     type: 'website',
   },
 }

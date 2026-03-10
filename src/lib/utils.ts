@@ -28,36 +28,57 @@ export const STATUS_CONFIG: Record<ListingStatus, { label: string; className: st
   ended: { label: 'Ended', className: 'pill-ended' },
 }
 
+function parseTimeStr(timeStr: string | null, defaultHour = 23, defaultMin = 59): { hour: number; min: number } {
+  if (!timeStr) return { hour: defaultHour, min: defaultMin }
+  const s = timeStr.trim()
+  // 12-hour: "4:00 PM", "4:00PM", "4 PM"
+  const m12 = s.match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)$/i)
+  if (m12) {
+    let hour = parseInt(m12[1], 10)
+    const min = m12[2] ? parseInt(m12[2], 10) : 0
+    const period = m12[3].toUpperCase()
+    if (period === 'PM' && hour !== 12) hour += 12
+    if (period === 'AM' && hour === 12) hour = 0
+    return { hour, min }
+  }
+  // 24-hour: "16:00", "16:00:00"
+  const m24 = s.match(/^(\d{1,2}):(\d{2})/)
+  if (m24) return { hour: parseInt(m24[1], 10), min: parseInt(m24[2], 10) }
+  return { hour: defaultHour, min: defaultMin }
+}
+
 export function getLiveStatus(listing: Listing): ListingStatus {
   const now = new Date()
-  // Treat dates as local midnight to avoid timezone shifts
   const [sy, sm, sd] = listing.start_date.split('-').map(Number)
   const [ey, em, ed] = listing.end_date.split('-').map(Number)
   const startMidnight = new Date(sy, sm - 1, sd, 0, 0, 0)
   const endMidnight = new Date(ey, em - 1, ed, 0, 0, 0)
 
-  // Parse end_time (e.g. "4:00 PM", "4:00PM", "4 PM") into hours/minutes
-  let endHour = 23, endMin = 59
-  if (listing.end_time) {
-    const match = listing.end_time.trim().match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)$/i)
-    if (match) {
-      endHour = parseInt(match[1], 10)
-      endMin = match[2] ? parseInt(match[2], 10) : 0
-      const period = match[3].toUpperCase()
-      if (period === 'PM' && endHour !== 12) endHour += 12
-      if (period === 'AM' && endHour === 12) endHour = 0
-    }
-  }
+  const { hour: endHour, min: endMin } = parseTimeStr(listing.end_time, 23, 59)
   const endDateTime = new Date(ey, em - 1, ed, endHour, endMin, 0)
 
+  // Definitively over (past final day's closing time)
   if (now > endDateTime) return 'ended'
 
-  const twoHoursBefore = new Date(endDateTime.getTime() - 2 * 60 * 60 * 1000)
   const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0)
+  const twoHoursBefore = new Date(endDateTime.getTime() - 2 * 60 * 60 * 1000)
 
-  if (todayMidnight.getTime() === endMidnight.getTime() && now >= twoHoursBefore) return 'ending_soon'
-  if (now >= startMidnight && now <= endDateTime) return 'live'
-  return 'upcoming'
+  // Today is the final day
+  if (todayMidnight.getTime() === endMidnight.getTime()) {
+    if (now >= twoHoursBefore) return 'ending_soon'
+    return 'live'
+  }
+
+  // Before the sale opens at all
+  if (now < startMidnight) return 'upcoming'
+
+  // Within the date range — check if today's session has already closed
+  const todayClose = new Date(
+    now.getFullYear(), now.getMonth(), now.getDate(), endHour, endMin, 0
+  )
+  if (now > todayClose) return 'ended'
+
+  return 'live'
 }
 
 export function formatDate(dateStr: string): string {

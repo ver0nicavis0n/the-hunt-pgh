@@ -36,9 +36,8 @@ export default function Nav() {
         }} className="nav-links-desktop">
           {[
             { label: 'Sales', href: '/' },
+            { label: 'Shops', href: '/shops' },
             { label: 'Map', href: '/?view=map' },
-            { label: 'Shops', href: '/for-businesses' },
-            { label: 'Venues', href: '/for-businesses' },
           ].map(link => (
             <li key={link.label}>
               <a href={link.href} style={{

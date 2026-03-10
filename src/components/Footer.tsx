@@ -34,8 +34,8 @@ export default function Footer() {
             { label: 'Garage Sales', href: '/?type=garage_sale' },
             { label: 'Flea Markets', href: '/?type=flea_market' },
             { label: 'Auctions', href: '/?type=auction' },
-            { label: 'Shops', href: '/for-businesses' },
-            { label: 'Venues', href: '/for-businesses' },
+            { label: 'Shops', href: '/shops' },
+            { label: 'Venues', href: '/venues' },
           ].map(link => (
             <a key={link.label} href={link.href} style={{
               display: 'block', fontFamily: '"DM Sans", sans-serif',

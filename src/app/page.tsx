@@ -8,16 +8,23 @@ import Footer from '@/components/Footer'
 import Loader from '@/components/Loader'
 
 export default function Home() {
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [mounted, setMounted] = useState(false)
 
-  useEffect(() => { setMounted(true) }, [])
+  useEffect(() => {
+    const alreadySeen = sessionStorage.getItem('loaderShown')
+    if (!alreadySeen) setLoading(true)
+    setMounted(true)
+  }, [])
 
   if (!mounted) return null
 
   return (
     <>
-      {loading && <Loader onDone={() => setLoading(false)} />}
+      {loading && <Loader onDone={() => {
+        sessionStorage.setItem('loaderShown', '1')
+        setLoading(false)
+      }} />}
       <div style={{ opacity: loading ? 0 : 1, transition: 'opacity 0.4s ease' }}>
         <Nav />
         <Hero />

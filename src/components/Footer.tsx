@@ -56,6 +56,7 @@ export default function Footer() {
           {[
             { label: 'About', href: '/about' },
             { label: 'For Businesses', href: '/for-businesses' },
+            { label: 'Submit a Sale', href: '/submit' },
             { label: 'Newsletter', href: '/#alerts' },
             { label: 'Map View', href: '/?view=map' },
           ].map(link => (

@@ -37,6 +37,7 @@ export default function Nav() {
           {[
             { label: 'Sales', href: '/' },
             { label: 'Shops', href: '/shops' },
+            { label: 'Venues', href: '/venues' },
             { label: 'Map', href: '/?view=map' },
           ].map(link => (
             <li key={link.label}>

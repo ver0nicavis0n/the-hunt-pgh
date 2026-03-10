@@ -2,10 +2,15 @@
 
 interface FiltersProps {
   activeTypes: string[]
-  activeStatuses: string[]
+  dateFilter: string
+  customDateStart: string
+  customDateEnd: string
+  auctionMode: string
   activeNeighborhood: string
   onTypeToggle: (t: string) => void
-  onStatusToggle: (s: string) => void
+  onDateFilterChange: (f: string) => void
+  onCustomDateChange: (start: string, end: string) => void
+  onAuctionModeChange: (m: string) => void
   onNeighborhoodChange: (n: string) => void
   onClearAll: () => void
   totalCount: number
@@ -18,12 +23,14 @@ const TYPES = [
   { value: 'garage_sale', label: '🚗 Garage Sales' },
   { value: 'flea_market', label: '🛍 Flea Markets' },
   { value: 'auction', label: '🔨 Auctions' },
+  { value: 'venue', label: '🏪 Venues' },
+  { value: 'shop', label: '🏬 Shops' },
 ]
 
-const STATUSES = [
-  { value: 'live', label: 'Happening Now' },
-  { value: 'upcoming', label: 'Coming Up' },
-  { value: 'ending_soon', label: 'Ending Soon' },
+const DATE_QUICK = [
+  { value: 'today', label: 'Today' },
+  { value: 'weekend', label: 'This Weekend' },
+  { value: 'week', label: 'This Week' },
 ]
 
 const NEIGHBORHOODS = [
@@ -33,8 +40,9 @@ const NEIGHBORHOODS = [
 ]
 
 export default function Filters({
-  activeTypes, activeStatuses, activeNeighborhood,
-  onTypeToggle, onStatusToggle, onNeighborhoodChange, onClearAll,
+  activeTypes, dateFilter, customDateStart, customDateEnd, auctionMode,
+  activeNeighborhood, onTypeToggle, onDateFilterChange, onCustomDateChange,
+  onAuctionModeChange, onNeighborhoodChange, onClearAll,
   totalCount, view, onViewChange,
 }: FiltersProps) {
   const labelStyle = {
@@ -43,7 +51,7 @@ export default function Filters({
     color: 'var(--ink-faint)', marginBottom: '0.75rem', display: 'block',
   }
 
-  const hasFilters = activeTypes.length > 0 || activeStatuses.length > 0 || activeNeighborhood !== ''
+  const hasFilters = activeTypes.length > 0 || dateFilter !== '' || activeNeighborhood !== '' || auctionMode !== ''
 
   const Checkbox = ({ checked, label, onToggle }: { checked: boolean; label: string; onToggle: () => void }) => (
     <div onClick={onToggle} style={{
@@ -71,6 +79,8 @@ export default function Filters({
       }}>{label}</span>
     </div>
   )
+
+  const showAuctionMode = activeTypes.includes('auction')
 
   return (
     <aside style={{ width: 210, flexShrink: 0, paddingTop: '0.5rem' }}>
@@ -112,20 +122,89 @@ export default function Filters({
         )}
       </div>
 
+      {/* Type */}
       <div style={{ marginBottom: '2rem' }}>
         <span style={labelStyle}>Type</span>
         {TYPES.map(t => (
-          <Checkbox key={t.value} checked={activeTypes.includes(t.value)} label={t.label} onToggle={() => onTypeToggle(t.value)} />
+          <div key={t.value}>
+            <Checkbox
+              checked={activeTypes.includes(t.value)}
+              label={t.label}
+              onToggle={() => onTypeToggle(t.value)}
+            />
+            {/* Auction sub-filter */}
+            {t.value === 'auction' && showAuctionMode && (
+              <div style={{ marginLeft: '1.4rem', marginTop: '0.25rem', marginBottom: '0.25rem', display: 'flex', gap: '0.4rem' }}>
+                {[{ value: '', label: 'All' }, { value: 'online', label: 'Online' }, { value: 'inperson', label: 'In-Person' }].map(opt => (
+                  <button key={opt.value} onClick={() => onAuctionModeChange(opt.value)} style={{
+                    fontFamily: '"DM Mono", monospace', fontSize: '0.42rem',
+                    letterSpacing: '0.1em', textTransform: 'uppercase',
+                    padding: '0.2rem 0.5rem', borderRadius: 2, border: 'none', cursor: 'pointer',
+                    background: auctionMode === opt.value ? 'var(--ink)' : 'var(--paper)',
+                    color: auctionMode === opt.value ? '#fff' : 'var(--ink-faint)',
+                    transition: 'all 0.12s',
+                  }}>{opt.label}</button>
+                ))}
+              </div>
+            )}
+          </div>
         ))}
       </div>
 
+      {/* When */}
       <div style={{ marginBottom: '2rem' }}>
         <span style={labelStyle}>When</span>
-        {STATUSES.map(s => (
-          <Checkbox key={s.value} checked={activeStatuses.includes(s.value)} label={s.label} onToggle={() => onStatusToggle(s.value)} />
-        ))}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '0.9rem' }}>
+          {DATE_QUICK.map(q => (
+            <button key={q.value} onClick={() => onDateFilterChange(dateFilter === q.value ? '' : q.value)} style={{
+              fontFamily: '"DM Mono", monospace', fontSize: '0.44rem',
+              letterSpacing: '0.1em', textTransform: 'uppercase',
+              padding: '0.28rem 0.6rem', borderRadius: 2, border: 'none', cursor: 'pointer',
+              background: dateFilter === q.value ? 'var(--ink)' : 'var(--paper)',
+              color: dateFilter === q.value ? '#fff' : 'var(--ink-faint)',
+              transition: 'all 0.12s',
+            }}>{q.label}</button>
+          ))}
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+          <div>
+            <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '0.42rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-faint)', marginBottom: '0.25rem' }}>From</div>
+            <input
+              type="date"
+              value={customDateStart}
+              onChange={e => {
+                onCustomDateChange(e.target.value, customDateEnd)
+                if (e.target.value) onDateFilterChange('custom')
+              }}
+              style={{
+                width: '100%', fontFamily: '"DM Mono", monospace', fontSize: '0.6rem',
+                padding: '0.35rem 0.5rem', border: '1px solid var(--border)',
+                borderRadius: 2, background: 'var(--white)', color: 'var(--ink)',
+                outline: 'none',
+              }}
+            />
+          </div>
+          <div>
+            <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '0.42rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-faint)', marginBottom: '0.25rem' }}>To</div>
+            <input
+              type="date"
+              value={customDateEnd}
+              onChange={e => {
+                onCustomDateChange(customDateStart, e.target.value)
+                if (e.target.value) onDateFilterChange('custom')
+              }}
+              style={{
+                width: '100%', fontFamily: '"DM Mono", monospace', fontSize: '0.6rem',
+                padding: '0.35rem 0.5rem', border: '1px solid var(--border)',
+                borderRadius: 2, background: 'var(--white)', color: 'var(--ink)',
+                outline: 'none',
+              }}
+            />
+          </div>
+        </div>
       </div>
 
+      {/* Neighborhood */}
       <div>
         <span style={labelStyle}>Neighborhood</span>
         {NEIGHBORHOODS.map(n => (

@@ -57,7 +57,7 @@ export default function Footer() {
             { label: 'About', href: '/about' },
             { label: 'For Businesses', href: '/for-businesses' },
             { label: 'Newsletter', href: '/#alerts' },
-            { label: 'Map View', href: '/#map' },
+            { label: 'Map View', href: '/?view=map' },
           ].map(link => (
             <a key={link.label} href={link.href} style={{
               display: 'block', fontFamily: '"DM Sans", sans-serif',

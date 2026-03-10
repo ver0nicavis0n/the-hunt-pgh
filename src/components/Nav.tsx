@@ -36,7 +36,7 @@ export default function Nav() {
         }} className="nav-links-desktop">
           {[
             { label: 'Sales', href: '/' },
-            { label: 'Map', href: '/#map' },
+            { label: 'Map', href: '/?view=map' },
             { label: 'Shops', href: '/for-businesses' },
             { label: 'Venues', href: '/for-businesses' },
           ].map(link => (

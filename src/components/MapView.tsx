@@ -1,7 +1,8 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import { Listing } from '@/types'
-import { STRIPE_COLORS, CATEGORY_ICONS, STATUS_CONFIG, formatDateRange } from '@/lib/utils'
+import { STRIPE_COLORS, CATEGORY_ICONS, STATUS_CONFIG, formatDateRange, getLiveStatus } from '@/lib/utils'
+import GetDirectionsButton from '@/components/GetDirectionsButton'
 
 interface MapViewProps {
   listings: Listing[]
@@ -99,7 +100,7 @@ export default function MapView({ listings }: MapViewProps) {
             <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.4rem' }}>
                 <span>{CATEGORY_ICONS[selected.type]}</span>
-                <span className={`pill ${STATUS_CONFIG[selected.status].className}`}>{STATUS_CONFIG[selected.status].label}</span>
+                <span className={`pill ${STATUS_CONFIG[getLiveStatus(selected)].className}`}>{STATUS_CONFIG[getLiveStatus(selected)].label}</span>
               </div>
               <div style={{
                 fontFamily: '"Archivo Black", sans-serif', fontSize: '0.88rem',
@@ -119,12 +120,25 @@ export default function MapView({ listings }: MapViewProps) {
             }}>✕</button>
           </div>
 
-          <a href={`/sale/${selected.id}`} style={{
-            display: 'block', marginTop: '0.75rem', textAlign: 'center',
-            padding: '0.5rem', background: 'var(--ink)', color: '#fff', borderRadius: 2,
-            fontFamily: '"DM Mono", monospace', fontSize: '0.52rem',
-            letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none',
-          }}>View Sale Details →</a>
+          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem' }}>
+            {!selected.address_hidden && (
+              <GetDirectionsButton
+                address={selected.address}
+                lat={selected.lat}
+                lng={selected.lng}
+              />
+            )}
+            <a href={`/sale/${selected.id}`} style={{
+              flex: 1, display: 'block', textAlign: 'center',
+              padding: '0 0.75rem', lineHeight: '44px',
+              background: selected.address_hidden ? 'var(--ink)' : 'var(--paper)',
+              color: selected.address_hidden ? '#fff' : 'var(--ink)',
+              border: selected.address_hidden ? 'none' : '1px solid var(--border)',
+              borderRadius: 2,
+              fontFamily: '"DM Mono", monospace', fontSize: '0.52rem',
+              letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none',
+            }}>View Details →</a>
+          </div>
         </div>
       )}
 
